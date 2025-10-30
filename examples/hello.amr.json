@@ -1,0 +1,79 @@
+[
+  {
+    "id": "amr_afee2d0e",
+    "let": {
+      "name": "x",
+      "value": {
+        "add": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "def": {
+      "body": [
+        {
+          "id": "amr_4b1c1da5",
+          "return": {
+            "mul": [
+              {
+                "var": "n"
+              },
+              2
+            ]
+          }
+        }
+      ],
+      "id": "fn_42ef3ead",
+      "name": "double",
+      "params": [
+        "n"
+      ]
+    },
+    "id": "amr_b6ff14bb"
+  },
+  {
+    "let": {
+      "name": "t",
+      "value": {
+        "add": [
+          0,
+          {
+            "var": "x"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "amr_8880babe",
+    "let": {
+      "name": "y",
+      "value": {
+        "call": {
+          "args": [
+            {
+              "mul": [
+                {
+                  "var": "x"
+                },
+                1
+              ]
+            }
+          ],
+          "name": "double"
+        }
+      }
+    }
+  },
+  {
+    "id": "amr_f8218167",
+    "print": [
+      {
+        "var": "y"
+      }
+    ]
+  }
+]

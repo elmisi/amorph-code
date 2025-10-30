@@ -1,0 +1,1 @@
+[{"op":"insert_before","path":"/$[2]","node":{"let":{"name":"t","value":{"add":[0,{"var":"x"}]}}}}]

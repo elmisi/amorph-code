@@ -1,0 +1,17 @@
+[project]
+name = "amorph"
+version = "0.1.0"
+description = "Amorph: an AI-first structured programming language (MVP interpreter)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Amorph Contributors" }]
+dependencies = []
+
+[project.scripts]
+amorph = "amorph.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+

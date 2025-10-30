@@ -1,0 +1,8 @@
+[
+  { "let": { "name": "a", "value": 10 } },
+  { "let": { "name": "b", "value": 3 } },
+  { "let": { "name": "sum", "value": { "add": [ {"var": "a"}, {"var": "b"} ] } } },
+  { "let": { "name": "pow", "value": { "pow": [ {"var": "a"}, {"var": "b"} ] } } },
+  { "print": ["sum:", {"var": "sum"}, "pow:", {"var": "pow"}] }
+]
+

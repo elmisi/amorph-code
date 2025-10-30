@@ -1,0 +1,1 @@
+[{"op":"replace_call","match":{"name":"double"},"set":{"name":"double","args":[{"mul":[{"var":"x"},1]}]}}]

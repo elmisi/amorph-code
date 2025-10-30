@@ -1,0 +1,7 @@
+[
+  { "match": {"add": ["$x", 0] }, "replace": "$x" },
+  { "match": {"add": [0, "$x"] }, "replace": "$x" },
+  { "match": {"mul": ["$x", 1] }, "replace": "$x" },
+  { "match": {"mul": [1, "$x"] }, "replace": "$x" }
+]
+

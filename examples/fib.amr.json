@@ -1,0 +1,16 @@
+[
+  {"def": {"name": "fib", "params": ["n"], "body": [
+    {"if": {"cond": {"le": [{"var": "n"}, 1]}, "then": [
+      {"return": {"var": "n"}}
+    ], "else": [
+      {"let": {"name": "a", "value": {"call": {"name": "fib", "args": [{"sub": [{"var": "n"}, 1]}]}}}},
+      {"let": {"name": "b", "value": {"call": {"name": "fib", "args": [{"sub": [{"var": "n"}, 2]}]}}}},
+      {"return": {"add": [ {"var": "a"}, {"var": "b"} ]}}
+    ]}}
+  ]}},
+
+  {"let": {"name": "n", "value": 10}},
+  {"let": {"name": "result", "value": {"call": {"name": "fib", "args": [{"var": "n"}]}}}},
+  {"print": ["fib:", {"var": "n"}, "=", {"var": "result"}]}
+]
+

@@ -1,0 +1,15 @@
+[
+  {
+    "let": {
+      "name": "msq",
+      "value": "Hello, world!"
+    }
+  },
+  {
+    "print": [
+      {
+        "var": "msq"
+      }
+    ]
+  }
+]

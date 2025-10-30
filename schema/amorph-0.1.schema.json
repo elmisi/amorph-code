@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/amorph-0.1.schema.json",
+  "title": "Amorph v0.1 Program",
+  "type": "array",
+  "items": { "$ref": "#/definitions/Statement" },
+  "definitions": {
+    "Identifier": { "type": "string", "minLength": 1 },
+    "Expression": {
+      "oneOf": [
+        { "type": ["string", "number", "boolean", "null"] },
+        { "type": "array", "items": { "$ref": "#/definitions/Expression" } },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": true
+        }
+      ]
+    },
+    "Statement": {
+      "type": "object",
+      "minProperties": 1,
+      "oneOf": [
+        { "$ref": "#/definitions/LetStmt" },
+        { "$ref": "#/definitions/SetStmt" },
+        { "$ref": "#/definitions/DefStmt" },
+        { "$ref": "#/definitions/IfStmt" },
+        { "$ref": "#/definitions/ReturnStmt" },
+        { "$ref": "#/definitions/PrintStmt" },
+        { "$ref": "#/definitions/ExprStmt" }
+      ]
+    },
+    "LetStmt": {
+      "type": "object",
+      "properties": {
+        "let": {
+          "type": "object",
+          "required": ["name", "value"],
+          "properties": {
+            "name": { "$ref": "#/definitions/Identifier" },
+            "value": { "$ref": "#/definitions/Expression" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["let"],
+      "additionalProperties": false
+    },
+    "SetStmt": {
+      "type": "object",
+      "properties": {
+        "set": {
+          "type": "object",
+          "required": ["name", "value"],
+          "properties": {
+            "name": { "$ref": "#/definitions/Identifier" },
+            "value": { "$ref": "#/definitions/Expression" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["set"],
+      "additionalProperties": false
+    },
+    "DefStmt": {
+      "type": "object",
+      "properties": {
+        "def": {
+          "type": "object",
+          "required": ["name", "params", "body"],
+          "properties": {
+            "name": { "$ref": "#/definitions/Identifier" },
+            "params": { "type": "array", "items": { "$ref": "#/definitions/Identifier" } },
+            "body": { "type": "array", "items": { "$ref": "#/definitions/Statement" } }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["def"],
+      "additionalProperties": false
+    },
+    "IfStmt": {
+      "type": "object",
+      "properties": {
+        "if": {
+          "type": "object",
+          "required": ["cond"],
+          "properties": {
+            "cond": { "$ref": "#/definitions/Expression" },
+            "then": { "type": "array", "items": { "$ref": "#/definitions/Statement" } },
+            "else": { "type": "array", "items": { "$ref": "#/definitions/Statement" } }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["if"],
+      "additionalProperties": false
+    },
+    "ReturnStmt": {
+      "type": "object",
+      "properties": {
+        "return": { "$ref": "#/definitions/Expression" }
+      },
+      "required": ["return"],
+      "additionalProperties": false
+    },
+    "PrintStmt": {
+      "type": "object",
+      "properties": {
+        "print": {
+          "oneOf": [
+            { "$ref": "#/definitions/Expression" },
+            { "type": "array", "items": { "$ref": "#/definitions/Expression" } }
+          ]
+        }
+      },
+      "required": ["print"],
+      "additionalProperties": false
+    },
+    "ExprStmt": {
+      "type": "object",
+      "properties": {
+        "expr": { "$ref": "#/definitions/Expression" }
+      },
+      "required": ["expr"],
+      "additionalProperties": false
+    }
+  }
+}
+

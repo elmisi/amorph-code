@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/edits-0.1.schema.json",
+  "title": "Amorph Edits v0.1",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["op"],
+    "properties": {
+      "op": { "type": "string", "enum": ["add_function", "rename_function", "insert_before", "insert_after", "replace_call", "delete_node"] },
+      "name": { "type": "string" },
+      "params": { "type": "array", "items": { "type": "string" } },
+      "body": { "type": "array" },
+      "id": { "type": "string" },
+      "from": { "type": "string" },
+      "to": { "type": "string" },
+      "target": { "type": "string" },
+      "path": { "type": "string", "pattern": "^(\\/(\\$\\[[0-9]+\\]|[A-Za-z_][A-Za-z0-9_\-]*|fn\\[[^\\]]+\\]))+$" },
+      "node": { "type": "object" },
+      "match": { "type": "object", "properties": { "name": {"type":"string"}, "id": {"type":"string"} } },
+      "set": { "type": "object", "properties": { "name": {"type":"string"}, "id": {"type":"string"}, "args": {} } }
+    },
+    "allOf": [
+      {
+        "if": { "properties": { "op": { "const": "add_function" } } },
+        "then": { "required": ["name", "params", "body"] }
+      },
+      {
+        "if": { "properties": { "op": { "const": "rename_function" } } },
+        "then": { "required": ["to"], "oneOf": [ {"required": ["id"]}, {"required": ["from"]} ] }
+      },
+      {
+        "if": { "properties": { "op": { "const": "insert_before" } } },
+        "then": { "required": ["node"], "oneOf": [ {"required": ["target"]}, {"required": ["path"]} ] }
+      },
+      {
+        "if": { "properties": { "op": { "const": "insert_after" } } },
+        "then": { "required": ["node"], "oneOf": [ {"required": ["target"]}, {"required": ["path"]} ] }
+      },
+      {
+        "if": { "properties": { "op": { "const": "replace_call" } } },
+        "then": { "required": ["match", "set"] }
+      },
+      {
+        "if": { "properties": { "op": { "const": "delete_node" } } },
+        "then": { "oneOf": [ {"required": ["target"]}, {"required": ["path"]} ] }
+      }
+    ]
+  }
+}

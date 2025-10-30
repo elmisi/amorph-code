@@ -1,0 +1,16 @@
+[
+  {"def": {"name": "row", "params": ["n"], "body": [
+    {"print": [ {"spread": {"range": [1, {"var": "n"}] } } ] }
+  ]}},
+
+  {"def": {"name": "matrix", "params": ["n", "i"], "body": [
+    {"if": {"cond": {"le": [ {"var": "i"}, {"var": "n"} ]}, "then": [
+      {"expr": {"call": {"name": "row", "args": [ {"var": "n"} ]}}},
+      {"expr": {"call": {"name": "matrix", "args": [ {"var": "n"}, {"add": [ {"var": "i"}, 1 ]} ]}}}
+    ], "else": []}}
+  ]}},
+
+  {"let": {"name": "n", "value": 8}},
+  {"expr": {"call": {"name": "matrix", "args": [ {"var": "n"}, 1 ] }}}
+]
+

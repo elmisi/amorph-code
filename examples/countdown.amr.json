@@ -1,0 +1,13 @@
+[
+  {"def": {"name": "countdown", "params": ["n"], "body": [
+    {"if": {"cond": {"gt": [ {"var": "n"}, 0 ]}, "then": [
+      {"print": [{"var": "n"}]},
+      {"expr": {"call": {"name": "countdown", "args": [ {"sub": [ {"var": "n"}, 1 ] } ] }}}
+    ], "else": [
+      {"print": ["Lift off!"]}
+    ]}}
+  ]}},
+
+  {"expr": {"call": {"name": "countdown", "args": [5] }}}
+]
+

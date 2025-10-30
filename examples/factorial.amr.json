@@ -1,0 +1,13 @@
+[
+  { "def": { "name": "fact", "params": ["n"], "body": [
+    { "if": { "cond": { "le": [ {"var": "n"}, 1 ] }, "then": [
+      { "return": 1 }
+    ], "else": [
+      { "return": { "mul": [ {"var": "n"}, { "call": { "name": "fact", "args": [ { "sub": [ {"var": "n"}, 1 ] } ] } } ] } }
+    ]}}
+  ]}},
+
+  { "let": { "name": "n", "value": { "int": { "input": "Inserisci n per il fattoriale: " } } } },
+  { "let": { "name": "res", "value": { "call": { "name": "fact", "args": [ { "var": "n" } ] } } } },
+  { "print": ["fact:", {"var": "n"}, "=", {"var": "res"}] }
+]
