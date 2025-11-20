@@ -1,0 +1,12 @@
+[
+  {"def": {"name": "fact", "id": "fn_fact", "params": ["n"], "body": [
+    {"if": {"cond": {"le": [{"var": "n"}, 1]}, "then": [
+      {"return": 1}
+    ], "else": [
+      {"return": {"mul": [{"var": "n"}, {"call": {"id": "fn_fact", "args": [{"sub": [{"var": "n"}, 1]}]}}]}}
+    ]}}
+  ]}},
+  {"let": {"name": "n", "value": 5}},
+  {"let": {"name": "result", "value": {"call": {"id": "fn_fact", "args": [{"var": "n"}]}}}},
+  {"print": ["factorial(", {"var": "n"}, ") =", {"var": "result"}]}
+]

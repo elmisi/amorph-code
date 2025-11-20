@@ -1,0 +1,5 @@
+[
+  {"let": {"name": "x", "value": {"add": [1, 2]}}},
+  {"let": {"name": "y", "value": {"mul": [{"var": "x"}, 2]}}},
+  {"print": ["x =", {"var": "x"}, ", y =", {"var": "y"}]}
+]
