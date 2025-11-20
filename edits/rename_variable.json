@@ -1,0 +1,8 @@
+[
+  {
+    "op": "rename_variable",
+    "old_name": "x",
+    "new_name": "count",
+    "scope": "all"
+  }
+]

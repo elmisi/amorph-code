@@ -1,0 +1,6 @@
+[
+  {"let": {"name": "x", "value": 10}},
+  {"let": {"name": "y", "value": 20}},
+  {"let": {"name": "result", "value": {"add": [{"var": "x"}, {"var": "y"}]}}},
+  {"print": ["x =", {"var": "x"}, ", y =", {"var": "y"}, ", result =", {"var": "result"}]}
+]

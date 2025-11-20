@@ -59,6 +59,11 @@ def main(argv: list[str] | None = None) -> int:
     p_bench.add_argument("paths", nargs="*", help="Files or directories (default: examples)")
     p_bench.add_argument("--json", action="store_true", help="Output JSON only")
 
+    p_suggest = sub.add_parser("suggest", help="Suggest improvements and refactorings")
+    p_suggest.add_argument("path")
+    p_suggest.add_argument("--json", action="store_true", help="Output suggestions as JSON")
+    p_suggest.add_argument("--apply", action="store_true", help="Interactively apply suggestions")
+
     p_rew = sub.add_parser("rewrite", help="Apply pattern-based rewrites to program")
     p_rew.add_argument("program")
     p_rew.add_argument("rules")
@@ -143,6 +148,31 @@ def main(argv: list[str] | None = None) -> int:
         data = read_json(args.input)
         out = unminify_keys(data)
         write_json(args.output, out)
+        return 0
+    if args.cmd == "suggest":
+        from .suggestions import SuggestionEngine
+        data = read_json(args.path)
+        engine = SuggestionEngine()
+        suggestions = engine.suggest_improvements(data)
+
+        if args.json:
+            output = {
+                "total": len(suggestions),
+                "suggestions": [s.to_dict() for s in suggestions]
+            }
+            print(json.dumps(output, indent=2, ensure_ascii=False))
+        else:
+            if not suggestions:
+                print("No suggestions found. Program looks good!")
+                return 0
+
+            print(f"Found {len(suggestions)} suggestions:\n")
+            for i, sug in enumerate(suggestions, 1):
+                print(f"{i}. [{sug.priority.upper()}] {sug.operation}")
+                print(f"   Reason: {sug.reason}")
+                print(f"   Impact: {sug.estimated_impact}")
+                print()
+
         return 0
     if args.cmd == "bench":
         from .bench import bench

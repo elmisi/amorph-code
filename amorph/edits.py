@@ -192,6 +192,18 @@ def apply_edits(program: List[Dict[str, Any]], edits: List[Dict[str, Any]]) -> D
             op_delete_node(program, spec)
             report["details"].append({"op": op, "index": i})
             report["applied"] += 1
+        elif op == "rename_variable":
+            # New refactoring operation
+            from .refactor import op_rename_variable
+            changed = op_rename_variable(program, spec)
+            report["details"].append({"op": op, "index": i, "changed": changed})
+            report["applied"] += 1
+        elif op == "extract_function":
+            # New refactoring operation
+            from .refactor import op_extract_function
+            op_extract_function(program, spec)
+            report["details"].append({"op": op, "index": i})
+            report["applied"] += 1
         else:
             raise EditError("E_UNKNOWN_OP", f"Unknown op: {op}")
     return report
