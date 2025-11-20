@@ -5,7 +5,7 @@ import sys
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-from .errors import AmorphRuntimeError, AmorphValidationError
+from .errors import AmorphRuntimeError, AmorphValidationError, ErrorContext
 from .validate import validate_program
 from .io import IOBase, StdIO, QuietIO
 
@@ -16,7 +16,7 @@ class Frame:
 
 
 class VM:
-    def __init__(self, trace: bool = False, trace_json: bool = False, io: Optional[IOBase] = None, quiet: bool = False, allow_print: bool = True, allow_input: bool = True):
+    def __init__(self, trace: bool = False, trace_json: bool = False, io: Optional[IOBase] = None, quiet: bool = False, allow_print: bool = True, allow_input: bool = True, rich_errors: bool = False):
         self.stack: List[Frame] = [Frame(vars={})]
         # function registries by name and by id (if provided)
         self.funcs_by_name: Dict[str, Dict[str, Any]] = {}
@@ -26,11 +26,15 @@ class VM:
         self.quiet = quiet
         self.allow_print = allow_print
         self.allow_input = allow_input
+        self.rich_errors = rich_errors
         if io is not None:
             self.io = io
         else:
             self.io = QuietIO() if quiet else StdIO()
         self._call_seq = 0
+        # Context tracking for rich errors
+        self.current_path: List[Tuple[str, int]] = []
+        self.call_stack_names: List[str] = []
 
     # --------------- Utilities ---------------
     def _log(self, *args: Any) -> None:
@@ -66,7 +70,16 @@ class VM:
         for frame in reversed(self.stack):
             if name in frame.vars:
                 return frame.vars[name]
-        raise AmorphRuntimeError(f"Variable not found: {name}")
+
+        # Create rich error if enabled
+        if self.rich_errors:
+            context = ErrorContext(
+                path=_path_to_string(self.current_path),
+                call_stack=self.call_stack_names.copy()
+            )
+            raise AmorphRuntimeError(f"Variable not found: {name}", context)
+        else:
+            raise AmorphRuntimeError(f"Variable not found: {name}")
 
     # --------------- Execution ---------------
     def run(self, program: Any) -> Any:
@@ -100,6 +113,10 @@ class VM:
     def exec_stmt(self, stmt: Dict[str, Any], path: List[Tuple[str, int]]) -> Any:
         if not isinstance(stmt, dict):
             raise AmorphValidationError(f"Statement must be object, got: {type(stmt)}")
+
+        # Track current path for error reporting
+        self.current_path = path
+
         # path string for trace
         path_str = _path_to_string(path)
         stmt_kinds = ["let", "set", "def", "if", "return", "print", "expr"]
@@ -242,14 +259,31 @@ class VM:
         if fn_id is not None:
             fn = self.funcs_by_id.get(fn_id)
             if fn is None:
+                if self.rich_errors:
+                    context = ErrorContext(
+                        path=_path_to_string(self.current_path),
+                        call_stack=self.call_stack_names.copy()
+                    )
+                    raise AmorphRuntimeError(f"Function id not defined: {fn_id}", context)
                 raise AmorphRuntimeError(f"Function id not defined: {fn_id}")
         else:
             if name not in self.funcs_by_name:
+                if self.rich_errors:
+                    context = ErrorContext(
+                        path=_path_to_string(self.current_path),
+                        call_stack=self.call_stack_names.copy()
+                    )
+                    raise AmorphRuntimeError(f"Function not defined: {name}", context)
                 raise AmorphRuntimeError(f"Function not defined: {name}")
             fn = self.funcs_by_name[name]  # type: ignore[index]
         params = fn["params"]
         body = fn["body"]
         fn_name = fn.get("name")
+
+        # Track call stack for error reporting
+        if self.rich_errors:
+            fn_display = name or fn_id or "anonymous"
+            self.call_stack_names.append(fn_display)
         self._call_seq += 1
         call_id = self._call_seq
         self._emit({"event": "call_start", "call_id": call_id, "function": {"name": fn_name, "id": fn.get("id")}, "args": args})
@@ -270,6 +304,8 @@ class VM:
                     return result.value
             return result
         finally:
+            if self.rich_errors and self.call_stack_names:
+                self.call_stack_names.pop()
             self.pop()
 
     def apply_op(self, op: str, val: Any) -> Any:
