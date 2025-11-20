@@ -139,7 +139,7 @@ def validate_program(program: Any) -> None:
                             _walk_expr(v, check_node)
 
 
-def validate_program_report(program: Any, prefer_id: bool = False) -> List[ValidationIssue]:
+def validate_program_report(program: Any, prefer_id: bool = False, check_types: bool = False, check_scopes: bool = False) -> List[ValidationIssue]:
     issues: List[ValidationIssue] = []
 
     def push(code: str, msg: str, path: List[Tuple[str, int]]):
@@ -265,6 +265,32 @@ def validate_program_report(program: Any, prefer_id: bool = False) -> List[Valid
                             check_expr(v, q + [("let", -1), ("value", -1)])
     if saw_name and saw_id:
         issues.append(ValidationIssue(code="W_MIXED_CALL_STYLE", message="Mixed call styles (name and id) found", path="/", severity="warning", hint="Unify with: amorph migrate-calls <file> --to=id"))
+
+    # Optional: check scopes
+    if check_scopes:
+        try:
+            from .scope_analyzer import analyze_scopes
+            scope_issues = analyze_scopes(program)
+            issues.extend(scope_issues)
+        except ImportError:
+            pass  # Scope analyzer not available
+
+    # Optional: check types
+    if check_types:
+        try:
+            from .types import TypeInferencer
+            inferencer = TypeInferencer()
+            type_errors = inferencer.check_program(program)
+            for te in type_errors:
+                issues.append(ValidationIssue(
+                    code=te.code,
+                    message=te.message,
+                    path=te.path,
+                    severity="error",
+                    hint=te.hint
+                ))
+        except ImportError:
+            pass  # Type system not available
 
     return issues
 

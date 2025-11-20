@@ -29,6 +29,8 @@ def main(argv: list[str] | None = None) -> int:
     p_val = sub.add_parser("validate", help="Validate a program (schema/semantics)")
     p_val.add_argument("path")
     p_val.add_argument("--json", action="store_true", help="Emit JSON report with errors")
+    p_val.add_argument("--check-types", action="store_true", help="Enable type checking (experimental)")
+    p_val.add_argument("--check-scopes", action="store_true", help="Enable scope analysis")
 
     p_uid = sub.add_parser("add-uid", help="Add missing UID to statements/defs")
     p_uid.add_argument("path")
@@ -94,7 +96,12 @@ def main(argv: list[str] | None = None) -> int:
         data = read_json(args.path)
         if args.json:
             from .validate import validate_program_report
-            issues = validate_program_report(data, prefer_id=True)
+            issues = validate_program_report(
+                data,
+                prefer_id=True,
+                check_types=getattr(args, 'check_types', False),
+                check_scopes=getattr(args, 'check_scopes', False)
+            )
             ok = len([i for i in issues if i.severity == "error"]) == 0
             print(json.dumps({"ok": ok, "issues": [issue.__dict__ for issue in issues]}, ensure_ascii=False, indent=2))
             return 0 if ok else 1
