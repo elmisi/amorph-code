@@ -1,0 +1,19 @@
+[
+  {
+    "comment": "This program demonstrates enhanced validation features",
+    "def": {
+      "name": "calculate",
+      "id": "fn_calc",
+      "params": ["a", "b"],
+      "body": [
+        {"let": {"name": "sum", "value": {"add": [{"var": "a"}, {"var": "b"}]}}},
+        {"let": {"name": "product", "value": {"mul": [{"var": "a"}, {"var": "b"}]}}},
+        {"return": {"add": [{"var": "sum"}, {"var": "product"}]}}
+      ]
+    }
+  },
+  {"let": {"name": "x", "value": 10}},
+  {"let": {"name": "y", "value": 20}},
+  {"let": {"name": "result", "value": {"call": {"id": "fn_calc", "args": [{"var": "x"}, {"var": "y"}]}}}},
+  {"print": ["Result:", {"var": "result"}]}
+]
